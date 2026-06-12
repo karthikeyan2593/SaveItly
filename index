@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- SEO Tags -->
+  <title>SaveIt — Free Video Downloader for YouTube, Instagram, Facebook & TikTok</title>
+  <meta name="description" content="Download videos from YouTube, Instagram, Facebook and TikTok for free. High quality MP4 and MP3 downloads.">
+  <meta name="keywords" content="video downloader, save videos, youtube downloader, instagram video saver, tiktok video downloader, free online video downloader, fast video save">
+  <meta name="author" content="SaveIt">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="SaveIt - Fast & Free Video Downloader">
+  <meta property="og:description" content="Easily save videos from all your favorite social media platforms in one click.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://yourwebsite.com/">
+
+  <!-- Fonts & Styles -->
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="_shared.css"/>
+<style>
+    .hero { background: var(--bg); padding-bottom: 3rem; }
+    .hero h1 span { color: #e8ff47; }
+    .btn-download-hero { background: #e8ff47; color: #0d0d0d; }
+    .btn-download-hero:hover { background: #d4eb2f; }
+
+    .platforms-row {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 2.5rem;
+      flex-wrap: wrap;
+    }
+
+    .platform-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      background: rgba(255, 255, 255, 0.05); /* டார்க் தீமிற்கு ஏத்த பாக்ஸ் */
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      text-decoration: none;
+      color: #fff; /* எழுத்துக்கள் பளிச்சுனு தெரியும் */
+      font-size: 13px;
+      transition: 0.3s;
+    }
+
+    .platform-card:hover { 
+      background: rgba(255, 255, 255, 0.1);
+      border-color: #e8ff47; /* கிளிக் பண்ணும்போது மஞ்சள் பார்டர் */
+      transform: translateY(-3px);
+    }
+    
+    .platform-card svg { width: 24px; height: 24px; color: #e8ff47; }
+</style>
+</head>
+<body>
+  <nav>
+    <a class="nav-logo" href="index.html">Save<span>It</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="youtube.html" class="yt">YouTube</a></li>
+      <li><a href="instagram.html" class="ig">Instagram</a></li>
+      <li><a href="facebook.html" class="fb">Facebook</a></li>
+      <li><a href="tiktok.html" class="tt">TikTok</a></li>
+    </ul>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Download any video,<br><span>free & fast.</span></h1>
+      <p>Paste a link from YouTube, Instagram, Facebook or TikTok and download in the highest quality available.</p>
+
+<div class="input-wrap">
+        <input id="urlInput" type="text" placeholder="Paste video URL here..." onkeydown="if(event.key==='Enter') getInfo('urlInput','#e8ff47')"/>
+        <button class="btn-paste-sm" id="pasteBtn" onclick="pasteUrl('urlInput','pasteBtn')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Paste
+        </button>
+        <button class="btn-download-hero" id="fetchBtn" onclick="getInfo('urlInput','#e8ff47')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13M7 11l5 5 5-5M3 19h18"/></svg>
+          Download
+        </button>
+      </div>
+
+        <div class="loading" id="loading" style="max-width:680px;margin:0 auto;">
+    <div class="spinner" style="color:#e8ff47"></div> Fetching video info...
+  </div>
+  <div class="error-box" id="errorBox"></div>
+
+  <div class="result-section" id="resultSection" style="padding:0 1rem;">
+    <div class="result-card">
+      <div class="thumb-wrap">
+        <img id="thumbnail" src="" alt="thumbnail"/>
+        <div class="thumb-overlay"></div>
+        <span class="platform-pill" id="platformPill"></span>
+      </div>
+<div class="result-body">
+    <p class="video-title" id="videoTitle"></p>
+
+    <div id="download-table-container" style="display: none; padding-top: 15px;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <tbody id="download-tbody">
+                </tbody>
+        </table>
+    </div>
+</div>
+
+      <div id="download-table-container" style="display:none; margin-top: 20px; background: #fff; border-radius: 8px; padding: 15px; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+          <table style="width: 100%; border-collapse: collapse; color: #333; text-align: center; font-size: 14px;">
+              <thead>
+                  <tr style="border-bottom: 2px solid #ddd; background: #f9f9f9;">
+                      <th style="padding: 12px 8px;">Quality</th>
+                      <th style="padding: 12px 8px;">File Size</th>
+                      <th style="padding: 12px 8px;">Action</th>
+                  </tr>
+              </thead>
+              <tbody id="download-tbody">
+                  </tbody>
+          </table>
+      </div>
+
+  </section>
+
+
+      <div class="platforms-row">
+        <a href="youtube.html" class="platform-card pc-yt">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.45 3.5 12 3.5 12 3.5s-7.45 0-9.38.55A3.02 3.02 0 0 0 .5 6.19C0 8.13 0 12 0 12s0 3.87.5 5.81a3.02 3.02 0 0 0 2.12 2.14C4.55 20.5 12 20.5 12 20.5s7.45 0 9.38-.55a3.02 3.02 0 0 0 2.12-2.14C24 15.87 24 12 24 12s0-3.87-.5-5.81zM9.75 15.02V8.98L15.5 12l-5.75 3.02z"/></svg>
+          YouTube
+        </a>
+        <a href="instagram.html" class="platform-card pc-ig">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          Instagram
+        </a>
+        <a href="facebook.html" class="platform-card pc-fb">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          Facebook
+        </a>
+        <a href="tiktok.html" class="platform-card pc-tt">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
+          TikTok
+        </a>
+      </div>
+    </div>
+
+  <!-- FEATURES -->
+  <section class="features">
+    <h2 class="section-title">Why use SaveIt?</h2>
+    <p class="section-sub">Fast, free, and supports all major platforms.</p>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(232,255,71,0.1)">⚡</div>
+        <h3>Lightning Fast</h3>
+        <p>Download videos in seconds with our optimized backend processing.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(74,222,128,0.1)">🎯</div>
+        <h3>Up to 8K Quality</h3>
+        <p>Download in the highest quality available — 480p, 1080p, 4K, or 8K.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(251,146,60,0.1)">🎵</div>
+        <h3>MP3 Audio</h3>
+        <p>Extract audio from any YouTube video and save as MP3.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(139,92,246,0.1)">🔒</div>
+        <h3>No Registration</h3>
+        <p>No account needed. Just paste the URL and download instantly.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW TO -->
+  <section class="howto">
+    <h2 class="section-title">How to download?</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num" style="background:rgba(232,255,71,0.1);color:#e8ff47">1</div>
+        <div class="step-text">
+          <h4>Copy the video URL</h4>
+          <p>Go to YouTube, Instagram, Facebook or TikTok and copy the video link from the address bar or share button.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:rgba(232,255,71,0.1);color:#e8ff47">2</div>
+        <div class="step-text">
+          <h4>Paste & click Download</h4>
+          <p>Paste the URL in the box above and click the Download button. We'll fetch the video info instantly.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:rgba(232,255,71,0.1);color:#e8ff47">3</div>
+        <div class="step-text">
+          <h4>Select quality & save</h4>
+          <p>Choose your preferred quality from the options shown and click Download to save the file.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq">
+    <h2 class="section-title">Frequently Asked Questions</h2>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Is SaveIt free to use?
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-a">Yes! SaveIt is completely free to use. No registration, no subscription required.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Which platforms are supported?
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-a">SaveIt supports YouTube, Instagram (Reels, Videos, Stories), Facebook, and TikTok.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          What is the maximum download quality?
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-a">You can download up to 8K (7680p) quality depending on the source video's available resolution.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Can I download MP3 audio?
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-a">Yes! Head to the YouTube page to download audio in MP3 format from any YouTube video.</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2025 SaveIt · <a href="#">Privacy Policy</a> · <a href="#">Terms of Use</a> · For personal use only</p>
+  </footer>
+
+  <script src="_shared.js"></script>
+</body>
+</html>
