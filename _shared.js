@@ -1,4 +1,4 @@
-const API = 'http://localhost:5005';
+const API = 'https://media-downloader-api.onrender.com';
 let videoUrl = '';
 let videoTitle = '';
 
