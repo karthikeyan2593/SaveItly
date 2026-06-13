@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Instagram Video Downloader — SaveIt</title>
+  <meta name="description" content="Download Instagram Reels, Videos, Stories and Photos for free."/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="_shared.css"/>
+  <style>
+    .hero { background: linear-gradient(135deg, #2d0a1f 0%, #0d0d0d 60%); }
+    .hero h1 span { color: #E1306C; }
+    .btn-download-hero { background: #E1306C; color: #fff; }
+    .btn-download-hero:hover { background: #b8234f; }
+    .progress-fill { background: #E1306C; }
+    .btn-dl-final { background: #E1306C; color: #fff; }
+    .btn-dl-final:hover { background: #b8234f; }
+
+    .content-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .content-tab {
+      padding: 7px 18px;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: var(--font-body);
+    }
+
+    .content-tab.active, .content-tab:hover {
+      background: #E1306C;
+      border-color: #E1306C;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a class="nav-logo" href="index.html">Save<span style="color:#e8ff47">It</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="youtube.html" class="yt">YouTube</a></li>
+      <li><a href="instagram.html" class="ig active">Instagram</a></li>
+      <li><a href="facebook.html" class="fb">Facebook</a></li>
+      <li><a href="tiktok.html" class="tt">TikTok</a></li>
+    </ul>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-content">
+      <div class="content-tabs">
+        <button class="content-tab active">📹 Video</button>
+        <button class="content-tab">🎬 Reels</button>
+        <button class="content-tab">📸 Photo</button>
+        <button class="content-tab">⭕ Story</button>
+      </div>
+      <h1>Instagram<br><span>Downloader</span></h1>
+      <p>Download Instagram Reels, Videos, Photos and Stories easily. No login required for public content.</p>
+
+      <div class="input-wrap">
+        <input id="urlInput" type="text" placeholder="Paste Instagram post/reel link..." onkeydown="if(event.key==='Enter') getInfo('urlInput','#E1306C')"/>
+        <button class="btn-paste-sm" id="pasteBtn" onclick="pasteUrl('urlInput','pasteBtn')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Paste
+        </button>
+        <button class="btn-download-hero" id="fetchBtn" onclick="getInfo('urlInput','#E1306C')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13M7 11l5 5 5-5M3 19h18"/></svg>
+          Download
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <div class="loading" id="loading" style="max-width:680px;margin:0 auto;">
+    <div class="spinner" style="color:#E1306C"></div> Fetching Instagram content...
+  </div>
+  <div class="error-box" id="errorBox"></div>
+
+  <div class="result-section" id="resultSection" style="padding:0 1rem;">
+    <div class="result-card">
+      <div class="thumb-wrap">
+        <img id="thumbnail" src="" alt="thumbnail"/>
+        <div class="thumb-overlay"></div>
+        <span class="platform-pill" id="platformPill" style="background:#E1306C">Instagram</span>
+      </div>
+      <div class="result-body">
+        <p class="video-title" id="videoTitle"></p>
+        <p class="quality-label">Select Quality</p>
+        <div class="quality-grid" id="qualityGrid"></div>
+        <button class="btn-dl-final" id="dlBtn" onclick="startDownload('video')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13M7 11l5 5 5-5M3 19h18"/></svg>
+          Download
+        </button>
+        <div class="dl-progress" id="dlProgress">
+    <div class="progress-header">
+        <p>
+            <div class="spinner"></div>
+            <span id="progressText">Starting...</span>
+        </p>
+        <span class="progress-percent" id="progressPercent">0%</span>
+    </div>
+    <div class="progress-track">
+        <div class="progress-fill" id="progressBar"></div>
+    </div>
+</div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="howto">
+    <h2 class="section-title">How to download Instagram content?</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num" style="background:rgba(225,48,108,0.1);color:#E1306C">1</div>
+        <div class="step-text"><h4>Copy Instagram link</h4><p>Open Instagram, tap the 3-dot menu on the post/reel and tap "Copy Link".</p></div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:rgba(225,48,108,0.1);color:#E1306C">2</div>
+        <div class="step-text"><h4>Paste the URL</h4><p>Paste the copied Instagram link into the input box above.</p></div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:rgba(225,48,108,0.1);color:#E1306C">3</div>
+        <div class="step-text"><h4>Download</h4><p>Click the Download button and save the video or photo to your device.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="faq">
+    <h2 class="section-title">Instagram Downloader FAQ</h2>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Can I download private Instagram videos?
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-a">Private videos require Instagram login cookies. Public posts and reels work without any login.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Can I download Instagram Reels?
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-a">Yes! Instagram Reels are fully supported. Just paste the Reel link and download.</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2025 SaveIt · <a href="#">Privacy Policy</a> · <a href="#">Terms of Use</a> · For personal use only</p>
+  </footer>
+
+  <script src="_shared.js"></script>
+</body>
+</html>
